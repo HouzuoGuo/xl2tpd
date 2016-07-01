@@ -435,7 +435,7 @@ void network_thread ()
     struct tunnel *st;          /* Tunnel */
     fd_set readfds;             /* Descriptors to watch for reading */
     int max;                    /* Highest fd */
-    struct timeval tv, *ptv;    /* Timeout for select */
+    struct timeval tv;    /* Timeout for select */
     struct msghdr msgh;
     struct iovec iov;
     char cbuf[256];
@@ -454,8 +454,10 @@ void network_thread ()
         int ret;
         process_signal();
         max = build_fdset (&readfds);
-        ptv = process_schedule(&tv);
-        ret = select (max + 1, &readfds, NULL, NULL, ptv);
+        struct timeval timeout;
+        timeout.tv_sec = 15;
+        timeout.tv_usec = 0;
+        ret = select (max + 1, &readfds, NULL, NULL, &timeout);
         if (ret <= 0)
         {
             if (ret == 0)

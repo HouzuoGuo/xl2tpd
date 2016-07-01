@@ -29,3 +29,16 @@ It was de-facto maintained by Jacco de Leeuw <jacco2@dds.nl> in 2002 and 2003.
 Mailing Lists :
     https://lists.openswan.org/cgi-bin/mailman/listinfo/xl2tpd is home of the
     mailing list. Note: This is a closed list - you *must* be subscribed to post.
+
+The fork by Howard Guo:
+I setup a xl2tpd server on Amazon EC2, and it worked beautifully with iOS/MacOS/Windows 7, but always disconnects Android L2TP client after several minutes.
+
+After nearly a month of debugging effort, I still cannot give a definitive answer to the problem, but there is a workaround.
+
+In the original issue, the Android client appears to always request tunnel twice - "peer requested tunnel xxx twice", but it does not happen on other clients (MacOS, Macbook, Windows 7, iOS).
+
+In the source code, xl2tpd kills a tunnel if retransmission counter reaches certain threshold, it logs a message saying "Maximum retries exceeded for tunnel xxx" then hangs up on PPP connection.
+
+But the problem is: for whatever reason, the tunnel is the __actively used__ tunnel, so hanging it up means terminating Android's L2TP connection.
+
+The issue is resolved with my patch and all clients are now happy.
